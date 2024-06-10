@@ -1,11 +1,11 @@
 import { GroupMessage } from '../entities/group-message.entity';
 import * as moment from 'moment';
 import { DEFAULT_DB_DATETIME_FORMAT } from '../../../common/constants/constants';
-import { MessageReactionSerializer } from './message-reaction.serializer';
 import { FileUtilityService } from '../../../config/files/utility/file-utility.service';
 import { SenderSerializer } from './sender.serializer';
-import { UserRole } from '../../userRole/entities/user_role.entity';
 import { ReactionSerializer } from './reaction.serializer';
+import { UserRole } from '../../userRole/entities/user_role.entity';
+import { UserBriefSerializer } from '../../user/serializers/user-brief.serializer';
 
 export class GroupMessageSerializer {
   static serialize(
@@ -21,10 +21,17 @@ export class GroupMessageSerializer {
       const reactionId = reaction.reaction.id;
       const reactionData = reaction.reaction;
       const reactor = reaction.reactedBy;
+      const parsedReactor = UserBriefSerializer.serialize(
+        fileUtilityService,
+        reactor,
+      );
+
       const reactorData = {
-        user_id: reactor.id,
-        username: reactor.username,
-        is_organizer: reactor.userRole.id == UserRole.EMPLOYEE,
+        ...parsedReactor,
+        is_organizer: reactor.userRole.id == +UserRole.EMPLOYEE,
+        reaction_date: moment(reaction.createdAt).format(
+          DEFAULT_DB_DATETIME_FORMAT,
+        ),
       };
 
       if (!reactionsMetaData[reactionId]) {
@@ -51,10 +58,10 @@ export class GroupMessageSerializer {
       user: SenderSerializer.serialize(fileUtilityService, data.sender),
       timestamp: moment(data.createdAt).format(DEFAULT_DB_DATETIME_FORMAT),
       reactions_meta_data: metaDataList,
-      reactions: MessageReactionSerializer.serializeList(
-        fileUtilityService,
-        data.reactions,
-      ),
+      // reactions: MessageReactionSerializer.serializeList(
+      //   fileUtilityService,
+      //   data.reactions,
+      // ),
       replied_message: data.repliedMessage
         ? {
             message_id: data.repliedMessage.id,
