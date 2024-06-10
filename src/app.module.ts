@@ -49,6 +49,7 @@ import { IsNotExistConstraint } from './common/validators/is_not_exist_constrain
 import { FeaturedEventsModule } from './api/featured-events/featured-events.module';
 import { SeedingModule } from './api/seeding/seeding.module';
 import { GamificationModule } from './api/gamification/gamification.module';
+import { AbuseTypeModule } from './api/abuse-type/abuse-type.module';
 
 @Module({
   imports: [
@@ -115,6 +116,7 @@ import { GamificationModule } from './api/gamification/gamification.module';
     PaymentModule,
     FeaturedEventsModule,
     SeedingModule,
+    AbuseTypeModule,
     GamificationModule,
   ],
   providers: [IsUniqueConstraint, IsExistConstraint, IsNotExistConstraint],

@@ -24,6 +24,7 @@ export class SeedingController {
     await this.seedingService.seedUserRoles();
     await this.seedingService.seedChatReactions();
     await this.seedingService.seedFeaturedEventsTypes();
+    await this.seedingService.seedAbuseTypes();
     await this.seedingService.seedGamificationDefinedData();
     await this.seedingService.seedGamificationOperators();
     await this.seedingService.seedGamificationDefinedDataOperators();

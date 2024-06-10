@@ -17,6 +17,7 @@ import { Address } from '../address/entities/address.entity';
 import { Reaction } from '../chat/entities/reaction.entity';
 import { FieldTypeOperatorsEntity } from '../dynamic-forms/entities/field-type-operators.entity';
 import { FeaturedEventType } from '../featured-events/entities/featured-event-type.entity';
+import { AbuseType } from '../abuse-type/entities/abuse-type.entity';
 import { hash } from 'bcrypt';
 import { Admin } from '../admin/entities/admin.entity';
 import { User } from '../user/entities/user.entity';
@@ -29,6 +30,76 @@ import { PrizeTypeEntity } from '../gamification/entities/prizes/prize-type.enti
 @Injectable()
 export class SeedingService {
   constructor(private readonly dataSource: DataSource) {}
+
+  async seedAbuseTypes() {
+    await this.dataSource.query(
+      'ALTER SEQUENCE abuse_types_id_seq RESTART WITH 1;',
+    );
+
+    const abuseTypes: AbuseType[] = [
+      {
+        id: 1,
+        name: 'Harassment',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        id: 2,
+        name: 'Spam',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        id: 3,
+        name: 'Hate Speech',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        id: 4,
+        name: 'Threats',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        id: 5,
+        name: 'Explicit Content',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        id: 6,
+        name: 'Impersonation',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        id: 7,
+        name: 'Scam',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        id: 8,
+        name: 'Other',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+    ];
+
+    await this.dataSource.getRepository(AbuseType).upsert(abuseTypes, {
+      conflictPaths: ['id'],
+      upsertType: 'on-duplicate-key-update',
+    });
+  }
 
   async seedAgeGroups() {
     await this.dataSource.query(
