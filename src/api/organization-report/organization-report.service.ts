@@ -4,6 +4,7 @@ import { OrganizationReport } from './entities/organization-report.entity';
 import { DataSource, Repository } from 'typeorm';
 import { CreateOrganizationReportType } from './types/create-organization-report.type';
 import { CreateOrganizationReportTransformer } from './transformers/create-organization-report.transformer';
+import { OrganizationReportsQuery } from './filters/organization-reports.query';
 
 @Injectable()
 export class OrganizationReportService {
@@ -22,6 +23,20 @@ export class OrganizationReportService {
         reporter: true,
         abuseType: true,
       },
+    });
+  }
+
+  findAll(query: OrganizationReportsQuery, organizationId: number) {
+    return this.repository.findAndCount({
+      where: { organization: { id: organizationId } },
+      relations: {
+        event: true,
+        message: true,
+        reporter: true,
+        abuseType: true,
+      },
+      skip: (query.page - 1) * query.pageSize,
+      take: query.pageSize,
     });
   }
 

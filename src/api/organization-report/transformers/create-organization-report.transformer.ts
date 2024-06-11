@@ -6,6 +6,7 @@ export class CreateOrganizationReportTransformer {
   static transform(data: CreateOrganizationReportType) {
     return {
       reportType: data.type,
+      organization: { id: data.organization_id },
       message:
         data.type == OrganizationReportTypeEnum.message
           ? ({ id: data.message_id } as GroupMessage)

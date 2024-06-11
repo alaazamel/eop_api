@@ -6,6 +6,7 @@ import { GroupMessage } from '../../chat/entities/group-message.entity';
 import { AbuseType } from '../../abuse-type/entities/abuse-type.entity';
 import { User } from '../../user/entities/user.entity';
 import { Event } from '../../event/entities/event.entity';
+import { Organization } from '../../organization/entities/organization.entity';
 
 @Entity('organization_reports')
 export class OrganizationReport extends BaseEntity {
@@ -24,6 +25,16 @@ export class OrganizationReport extends BaseEntity {
     default: OrganizationReportStatusEnum.pending,
   })
   status: OrganizationReportStatusEnum;
+
+  @ManyToOne(() => Organization, { nullable: true })
+  @JoinColumn({ name: 'organization_id' })
+  organization?: Organization;
+
+  @RelationId(
+    (report: OrganizationReport) => report.organization,
+    'organization_id',
+  )
+  organizationId?: number;
 
   @ManyToOne(() => GroupMessage, { nullable: true })
   @JoinColumn({ name: 'message_id' })
