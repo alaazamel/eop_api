@@ -50,6 +50,7 @@ import { FeaturedEventsModule } from './api/featured-events/featured-events.modu
 import { SeedingModule } from './api/seeding/seeding.module';
 import { GamificationModule } from './api/gamification/gamification.module';
 import { AbuseTypeModule } from './api/abuse-type/abuse-type.module';
+import { OrganizationReportModule } from './api/organization-report/organization-report.module';
 
 @Module({
   imports: [
@@ -118,6 +119,7 @@ import { AbuseTypeModule } from './api/abuse-type/abuse-type.module';
     SeedingModule,
     AbuseTypeModule,
     GamificationModule,
+    OrganizationReportModule,
   ],
   providers: [IsUniqueConstraint, IsExistConstraint, IsNotExistConstraint],
   controllers: [HealthController],
