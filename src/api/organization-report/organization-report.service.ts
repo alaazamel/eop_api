@@ -19,7 +19,7 @@ export class OrganizationReportService {
       where: { id },
       relations: {
         event: true,
-        message: true,
+        message: { reactions: true, sender: true },
         reporter: true,
         abuseType: true,
       },
@@ -31,7 +31,7 @@ export class OrganizationReportService {
       where: { organization: { id: organizationId } },
       relations: {
         event: true,
-        message: true,
+        message: { reactions: true, sender: true },
         reporter: true,
         abuseType: true,
       },

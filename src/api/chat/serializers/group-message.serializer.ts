@@ -58,10 +58,6 @@ export class GroupMessageSerializer {
       user: SenderSerializer.serialize(fileUtilityService, data.sender),
       timestamp: moment(data.createdAt).format(DEFAULT_DB_DATETIME_FORMAT),
       reactions_meta_data: metaDataList,
-      // reactions: MessageReactionSerializer.serializeList(
-      //   fileUtilityService,
-      //   data.reactions,
-      // ),
       replied_message: data.repliedMessage
         ? {
             message_id: data.repliedMessage.id,

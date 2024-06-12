@@ -52,6 +52,11 @@ export class OrganizationReportController {
     return { data, metadata };
   }
 
+  // @Get()
+  // @UseGuards(AccessTokenGuard, RoleGuard)
+  // @Roles(UserRoleEnum.ATTENDEE)
+  // async isReported(@User() user: AuthUserType) {}
+
   @Post()
   @HttpCode(HttpStatus.OK)
   @UseGuards(AccessTokenGuard, RoleGuard)
