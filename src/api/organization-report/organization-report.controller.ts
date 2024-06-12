@@ -4,6 +4,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   Post,
   Query,
   UseGuards,
@@ -52,10 +53,15 @@ export class OrganizationReportController {
     return { data, metadata };
   }
 
-  // @Get()
-  // @UseGuards(AccessTokenGuard, RoleGuard)
-  // @Roles(UserRoleEnum.ATTENDEE)
-  // async isReported(@User() user: AuthUserType) {}
+  @Get('/is-reported/:message_id')
+  @UseGuards(AccessTokenGuard, RoleGuard)
+  @Roles(UserRoleEnum.ATTENDEE)
+  async isReported(
+    @User() user: AuthUserType,
+    @Param('message_id') messageId: number,
+  ) {
+    return this.service.isReported(user.sub, messageId);
+  }
 
   @Post()
   @HttpCode(HttpStatus.OK)

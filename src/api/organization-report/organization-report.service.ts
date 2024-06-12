@@ -5,6 +5,7 @@ import { DataSource, Repository } from 'typeorm';
 import { CreateOrganizationReportType } from './types/create-organization-report.type';
 import { CreateOrganizationReportTransformer } from './transformers/create-organization-report.transformer';
 import { OrganizationReportsQuery } from './filters/organization-reports.query';
+import { OrganizationReportTypeEnum } from './enums/organization-report-type.enum';
 
 @Injectable()
 export class OrganizationReportService {
@@ -13,6 +14,16 @@ export class OrganizationReportService {
     private readonly repository: Repository<OrganizationReport>,
     private readonly dataSource: DataSource,
   ) {}
+
+  isReported(userId: number, messageId: number): Promise<boolean> {
+    return this.repository.exists({
+      where: {
+        message: { id: messageId },
+        reporter: { id: userId },
+        reportType: OrganizationReportTypeEnum.message,
+      },
+    });
+  }
 
   findOne(id: number) {
     return this.repository.findOneOrFail({
