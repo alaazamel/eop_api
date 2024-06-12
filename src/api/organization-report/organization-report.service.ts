@@ -1,17 +1,26 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { OrganizationReport } from './entities/organization-report.entity';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, IsNull, Not, Repository } from 'typeorm';
 import { CreateOrganizationReportType } from './types/create-organization-report.type';
 import { CreateOrganizationReportTransformer } from './transformers/create-organization-report.transformer';
 import { OrganizationReportsQuery } from './filters/organization-reports.query';
 import { OrganizationReportTypeEnum } from './enums/organization-report-type.enum';
+import { OrganizationReportStatusEnum } from './enums/organization-report-status.enum';
+import { ChatApiService } from '../chat/services/chat-api.service';
+import { ChatGateway } from '../chat/gateways/chat.gateway';
 
 @Injectable()
 export class OrganizationReportService {
   constructor(
     @InjectRepository(OrganizationReport)
     private readonly repository: Repository<OrganizationReport>,
+    private readonly chatApiService: ChatApiService,
+    private readonly chatGateway: ChatGateway,
     private readonly dataSource: DataSource,
   ) {}
 
@@ -25,6 +34,46 @@ export class OrganizationReportService {
     });
   }
 
+  async resolveMessageReport(reportId: number) {
+    const report = await this.repository.findOne({
+      relations: { message: true },
+      where: {
+        reportType: OrganizationReportTypeEnum.message,
+        message: { id: Not(IsNull()) },
+        status: Not(OrganizationReportStatusEnum.resolved),
+        id: reportId,
+      },
+    });
+
+    if (!report) {
+      // throw an error...
+      throw new NotFoundException('The required report is not exist...');
+    }
+
+    // delete the message first.
+    const { isDeleted, groupId } = await this.chatApiService.deleteMessage(
+      report.message!.id,
+    );
+
+    if (isDeleted) {
+      // notify users...
+      this.chatGateway.emitMessageDeletedEvent(groupId!, report.message!.id);
+
+      // mark the report as resolved...
+      return this.updateStatus(reportId, OrganizationReportStatusEnum.resolved);
+    }
+
+    throw new BadRequestException('Error while deleting the message!');
+  }
+
+  async updateStatus(id: number, newStatus: OrganizationReportStatusEnum) {
+    // update
+    await this.repository.update(id, { status: newStatus });
+
+    // return the updated entity
+    return this.findOne(id);
+  }
+
   findOne(id: number) {
     return this.repository.findOneOrFail({
       where: { id },
@@ -34,6 +83,7 @@ export class OrganizationReportService {
         reporter: true,
         abuseType: true,
       },
+      withDeleted: true,
     });
   }
 
@@ -46,6 +96,7 @@ export class OrganizationReportService {
         reporter: true,
         abuseType: true,
       },
+      withDeleted: true,
       skip: (query.page - 1) * query.pageSize,
       take: query.pageSize,
     });

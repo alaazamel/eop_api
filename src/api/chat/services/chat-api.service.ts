@@ -37,7 +37,7 @@ export class ChatApiService {
     });
 
     // delete the message
-    const deleted: DeleteResult = await repository.delete(message.id);
+    const deleted: DeleteResult = await repository.softDelete(message.id);
     const isDeleted = deleted.affected != undefined && deleted.affected > 0;
     return {
       isDeleted: isDeleted,

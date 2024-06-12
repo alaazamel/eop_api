@@ -27,6 +27,7 @@ export class OrganizationReportSerializer {
           ? AbuseTypeSerializer.serialize(data.abuseType)
           : undefined,
       date: moment(data.createdAt).format(DEFAULT_DB_DATETIME_FORMAT),
+      status: data.status,
     };
   }
 

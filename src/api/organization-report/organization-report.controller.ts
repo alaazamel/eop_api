@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -21,6 +22,7 @@ import { Roles } from '../../common/decorators/roles.decorator';
 import { UserRoleEnum } from '../userRole/enums/user-role.enum';
 import { OrganizationReportsQuery } from './filters/organization-reports.query';
 import { EmployeeService } from '../employee/employee.service';
+import { OrganizationReportStatusEnum } from './enums/organization-report-status.enum';
 
 @Controller('organization-report')
 export class OrganizationReportController {
@@ -61,6 +63,45 @@ export class OrganizationReportController {
     @Param('message_id') messageId: number,
   ) {
     return this.service.isReported(user.sub, messageId);
+  }
+
+  @Put('/resolve-message/:report_id')
+  @UseGuards(AccessTokenGuard, RoleGuard)
+  @Roles(UserRoleEnum.EMPLOYEE)
+  async resolveMessageReport(@Param('report_id') reportId: number) {
+    const updated = await this.service.resolveMessageReport(reportId);
+    return OrganizationReportSerializer.serialize(
+      updated,
+      this.fileUtilityService,
+    );
+  }
+
+  @Put('/resolve/:report_id')
+  @UseGuards(AccessTokenGuard, RoleGuard)
+  @Roles(UserRoleEnum.EMPLOYEE)
+  async markAsResolved(@Param('report_id') reportId: number) {
+    const updated = await this.service.updateStatus(
+      reportId,
+      OrganizationReportStatusEnum.resolved,
+    );
+    return OrganizationReportSerializer.serialize(
+      updated,
+      this.fileUtilityService,
+    );
+  }
+
+  @Put('/ignore/:report_id')
+  @UseGuards(AccessTokenGuard, RoleGuard)
+  @Roles(UserRoleEnum.EMPLOYEE)
+  async markAsIgnored(@Param('report_id') reportId: number) {
+    const updated = await this.service.updateStatus(
+      reportId,
+      OrganizationReportStatusEnum.ignored,
+    );
+    return OrganizationReportSerializer.serialize(
+      updated,
+      this.fileUtilityService,
+    );
   }
 
   @Post()
