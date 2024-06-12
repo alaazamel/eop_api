@@ -1,5 +1,6 @@
 import { BaseEntity } from '../../../common/entities/base.entity';
 import { Column, Entity } from 'typeorm';
+import { AbuseTypeCategoryEnum } from '../enums/abuse-type-category.enum';
 
 @Entity('abuse_types')
 export class AbuseType extends BaseEntity {
@@ -9,4 +10,13 @@ export class AbuseType extends BaseEntity {
     nullable: false,
   })
   name: string;
+
+  @Column({
+    type: 'enum',
+    name: 'category',
+    nullable: false,
+    enum: AbuseTypeCategoryEnum,
+    default: AbuseTypeCategoryEnum.general,
+  })
+  category: AbuseTypeCategoryEnum;
 }

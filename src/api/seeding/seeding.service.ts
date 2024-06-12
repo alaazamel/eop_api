@@ -26,6 +26,7 @@ import { OperatorEntity } from '../gamification/entities/data-definition/operato
 import { DefinedDataOperatorsEntity } from '../gamification/entities/data-definition/defined-data-operators.entity';
 import { RewardTypeEntity } from '../gamification/entities/rewards/reward-type.entity';
 import { PrizeTypeEntity } from '../gamification/entities/prizes/prize-type.entity';
+import { AbuseTypeCategoryEnum } from '../abuse-type/enums/abuse-type-category.enum';
 
 @Injectable()
 export class SeedingService {
@@ -40,6 +41,7 @@ export class SeedingService {
       {
         id: 1,
         name: 'Harassment',
+        category: AbuseTypeCategoryEnum.message,
         createdAt: new Date(),
         updatedAt: new Date(),
         deletedAt: null,
@@ -47,6 +49,7 @@ export class SeedingService {
       {
         id: 2,
         name: 'Spam',
+        category: AbuseTypeCategoryEnum.message,
         createdAt: new Date(),
         updatedAt: new Date(),
         deletedAt: null,
@@ -54,6 +57,7 @@ export class SeedingService {
       {
         id: 3,
         name: 'Hate Speech',
+        category: AbuseTypeCategoryEnum.message,
         createdAt: new Date(),
         updatedAt: new Date(),
         deletedAt: null,
@@ -61,6 +65,7 @@ export class SeedingService {
       {
         id: 4,
         name: 'Threats',
+        category: AbuseTypeCategoryEnum.message,
         createdAt: new Date(),
         updatedAt: new Date(),
         deletedAt: null,
@@ -68,6 +73,7 @@ export class SeedingService {
       {
         id: 5,
         name: 'Explicit Content',
+        category: AbuseTypeCategoryEnum.message,
         createdAt: new Date(),
         updatedAt: new Date(),
         deletedAt: null,
@@ -75,6 +81,7 @@ export class SeedingService {
       {
         id: 6,
         name: 'Impersonation',
+        category: AbuseTypeCategoryEnum.message,
         createdAt: new Date(),
         updatedAt: new Date(),
         deletedAt: null,
@@ -82,6 +89,7 @@ export class SeedingService {
       {
         id: 7,
         name: 'Scam',
+        category: AbuseTypeCategoryEnum.message,
         createdAt: new Date(),
         updatedAt: new Date(),
         deletedAt: null,
@@ -89,6 +97,79 @@ export class SeedingService {
       {
         id: 8,
         name: 'Other',
+        category: AbuseTypeCategoryEnum.message,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        id: 9,
+        name: 'Poor Organization',
+        category: AbuseTypeCategoryEnum.general,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        id: 10,
+        name: 'Inadequate Facilities',
+        category: AbuseTypeCategoryEnum.general,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        id: 11,
+        name: 'Unprofessional Behavior',
+        category: AbuseTypeCategoryEnum.general,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        id: 12,
+        name: 'Lack of Safety Measures',
+        category: AbuseTypeCategoryEnum.general,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        id: 13,
+        name: 'False Advertising',
+        category: AbuseTypeCategoryEnum.general,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        id: 14,
+        name: 'High Prices',
+        category: AbuseTypeCategoryEnum.general,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        id: 15,
+        name: 'Unsatisfactory Services',
+        category: AbuseTypeCategoryEnum.general,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        id: 16,
+        name: 'Accessibility Issues',
+        category: AbuseTypeCategoryEnum.general,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        id: 17,
+        name: 'Other',
+        category: AbuseTypeCategoryEnum.general,
         createdAt: new Date(),
         updatedAt: new Date(),
         deletedAt: null,

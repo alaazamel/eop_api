@@ -22,8 +22,7 @@ export class CreateOrganizationReportDto {
   @IsExist({ tableName: 'group_messages', column: 'id' })
   message_id?: number;
 
-  @ValidateIf((o) => o.type === OrganizationReportTypeEnum.message)
-  @IsNotEmpty() // Ensure it's not empty when required
+  @IsDefined()
   @IsExist({ tableName: 'abuse_types', column: 'id' })
   abuse_type_id?: number;
 

@@ -6,6 +6,7 @@ export class AbuseTypeSerializer {
     return {
       value: data.id,
       label: data.name,
+      category: data.category,
     };
   }
 

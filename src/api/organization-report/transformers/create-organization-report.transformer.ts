@@ -15,10 +15,7 @@ export class CreateOrganizationReportTransformer {
         data.type == OrganizationReportTypeEnum.message
           ? { id: data.event_id }
           : undefined,
-      abuseType:
-        data.type == OrganizationReportTypeEnum.message
-          ? { id: data.abuse_type_id }
-          : undefined,
+      abuseType: { id: data.abuse_type_id },
       reporter: { id: data.reporter_id },
       description: data.additional_description,
     };
