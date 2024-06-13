@@ -6,6 +6,7 @@ import { CreateAdminReportTransformer } from './transformers/create-admin-report
 import { CreateAdminReportType } from './types/create-admin-report.type';
 import { AdminReportsQuery } from './filters/admin-reports.query';
 import { AdminReportTypeEnum } from './enums/admin-report-type.enum';
+import { AdminReportStatusEnum } from './enums/admin-report-status.enum';
 
 @Injectable()
 export class AdminReportService {
@@ -59,5 +60,16 @@ export class AdminReportService {
         reportType: AdminReportTypeEnum.event,
       },
     });
+  }
+
+  async updateStatus(id: number, newStatus: AdminReportStatusEnum) {
+    // update
+    await this.repository.update(id, {
+      status: newStatus,
+      resolvedAt: new Date(),
+    });
+
+    // return the updated entity
+    return this.findOne(id);
   }
 }

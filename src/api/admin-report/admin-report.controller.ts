@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -20,6 +21,7 @@ import { AuthUserType } from '../../common/types/auth-user.type';
 import { CreateAdminReportDto } from './dto/create-admin-report.dto';
 import { AdminReportSerializer } from './serializers/admin-report.serializer';
 import { AdminReportsQuery } from './filters/admin-reports.query';
+import { AdminReportStatusEnum } from './enums/admin-report-status.enum';
 
 @Controller('admin-report')
 export class AdminReportController {
@@ -65,5 +67,27 @@ export class AdminReportController {
     @Param('event_id') eventId: number,
   ) {
     return this.service.isReported(user.sub, eventId);
+  }
+
+  @Put('/ignore/:report_id')
+  @UseGuards(AccessTokenGuard, RoleGuard)
+  @Roles(UserRoleEnum.ADMIN)
+  async markAsIgnored(@Param('report_id') reportId: number) {
+    const updated = await this.service.updateStatus(
+      reportId,
+      AdminReportStatusEnum.ignored,
+    );
+    return AdminReportSerializer.serialize(updated, this.fileUtilityService);
+  }
+
+  @Put('/resolve/:report_id')
+  @UseGuards(AccessTokenGuard, RoleGuard)
+  @Roles(UserRoleEnum.ADMIN)
+  async markAsResolved(@Param('report_id') reportId: number) {
+    const updated = await this.service.updateStatus(
+      reportId,
+      AdminReportStatusEnum.resolved,
+    );
+    return AdminReportSerializer.serialize(updated, this.fileUtilityService);
   }
 }
