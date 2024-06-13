@@ -70,4 +70,11 @@ export class OrganizationReport extends BaseEntity {
     type: 'text',
   })
   description?: string;
+
+  @Column({
+    name: 'resolved_at',
+    type: 'timestamp',
+    nullable: true,
+  })
+  resolvedAt!: Date | null;
 }

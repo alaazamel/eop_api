@@ -27,6 +27,8 @@ import { DefinedDataOperatorsEntity } from '../gamification/entities/data-defini
 import { RewardTypeEntity } from '../gamification/entities/rewards/reward-type.entity';
 import { PrizeTypeEntity } from '../gamification/entities/prizes/prize-type.entity';
 import { AbuseTypeCategoryEnum } from '../abuse-type/enums/abuse-type-category.enum';
+import { PlatformProblemCategoryEnum } from '../platform-problem/enums/platform-problem-category.enum';
+import { PlatformProblem } from '../platform-problem/entities/platform-problem.entity';
 
 @Injectable()
 export class SeedingService {
@@ -180,6 +182,150 @@ export class SeedingService {
       conflictPaths: ['id'],
       upsertType: 'on-duplicate-key-update',
     });
+  }
+
+  async seedPlatformProblems() {
+    await this.dataSource.query(
+      'ALTER SEQUENCE platform_problems_id_seq RESTART WITH 1;',
+    );
+
+    const platformProblems = [
+      {
+        id: 1,
+        content: 'Event Cancellation',
+        category: PlatformProblemCategoryEnum.event,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        id: 2,
+        content: 'Schedule Changes',
+        category: PlatformProblemCategoryEnum.event,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        id: 3,
+        content: 'Poor Audio/Visual Quality',
+        category: PlatformProblemCategoryEnum.event,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        id: 4,
+        content: 'Overcrowding',
+        category: PlatformProblemCategoryEnum.event,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        id: 5,
+        content: 'Unclear Instructions',
+        category: PlatformProblemCategoryEnum.event,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        id: 6,
+        content: 'Speaker No-show',
+        category: PlatformProblemCategoryEnum.event,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        id: 7,
+        content: 'Inadequate Seating',
+        category: PlatformProblemCategoryEnum.event,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        id: 8,
+        content: 'Event Location Issues',
+        category: PlatformProblemCategoryEnum.event,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        id: 9,
+        content: 'Other',
+        category: PlatformProblemCategoryEnum.event,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        id: 10,
+        content: 'Login Issues',
+        category: PlatformProblemCategoryEnum.general,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        id: 11,
+        content: 'Slow Performance',
+        category: PlatformProblemCategoryEnum.general,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        id: 12,
+        content: 'Payment Issues',
+        category: PlatformProblemCategoryEnum.general,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        id: 13,
+        content: 'Registration Problems',
+        category: PlatformProblemCategoryEnum.general,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        id: 14,
+        content: 'User Interface Bugs',
+        category: PlatformProblemCategoryEnum.general,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        id: 15,
+        content: 'Missing Features',
+        category: PlatformProblemCategoryEnum.general,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+      {
+        id: 16,
+        content: 'Other',
+        category: PlatformProblemCategoryEnum.general,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      },
+    ];
+
+    await this.dataSource
+      .getRepository(PlatformProblem)
+      .upsert(platformProblems, {
+        conflictPaths: ['id'],
+        upsertType: 'on-duplicate-key-update',
+      });
   }
 
   async seedAgeGroups() {

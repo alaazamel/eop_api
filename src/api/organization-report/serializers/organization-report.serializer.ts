@@ -15,7 +15,7 @@ export class OrganizationReportSerializer {
     return {
       id: data.id,
       type: data.reportType,
-      event_name: data.event?.title ?? null,
+      event: data.event ? { id: data.event.id, title: data.event.title } : null,
       description: data.description ?? null,
       reporter: UserSerializer.serialize(fileUtilityService!, data.reporter),
       message:
@@ -28,6 +28,9 @@ export class OrganizationReportSerializer {
           : undefined,
       date: moment(data.createdAt).format(DEFAULT_DB_DATETIME_FORMAT),
       status: data.status,
+      resolved_at: data.resolvedAt
+        ? moment(data.resolvedAt).format(DEFAULT_DB_DATETIME_FORMAT)
+        : null,
     };
   }
 
