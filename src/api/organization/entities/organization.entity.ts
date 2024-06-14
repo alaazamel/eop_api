@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany } from 'typeorm';
+import { Column, Entity, OneToMany, OneToOne } from 'typeorm';
 import { BaseEntity } from '../../../common/entities/base.entity';
 import { ContactOrganization } from './contact_organization.entity';
 import { Employee } from '../../employee/entities/employee.entity';
@@ -8,6 +8,7 @@ import { BlockedAttendee } from './blocked-attendee.entity';
 import { FollowingAttendee } from './following-attendee.entity';
 import { Event } from '../../event/entities/event.entity';
 import { OrganizationsTickets } from '../../payment/entities/organizations-tickets.entity';
+import { BlockedOrganization } from '../../admin/entities/blocked-organization.entity';
 
 @Entity({ name: 'organizations' })
 export class Organization extends BaseEntity {
@@ -64,4 +65,10 @@ export class Organization extends BaseEntity {
     (organizationsTickets) => organizationsTickets.organization,
   )
   tickets: OrganizationsTickets[];
+
+  @OneToOne(
+    () => BlockedOrganization,
+    (blocked: BlockedOrganization) => blocked.organization,
+  )
+  blockedOrganization?: BlockedOrganization;
 }

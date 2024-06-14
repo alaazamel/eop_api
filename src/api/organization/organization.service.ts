@@ -157,12 +157,19 @@ export class OrganizationService {
   }
 
   async findAll() {
-    return await this.organizationRepository.find({
-      relations: {
-        employees: { user: true },
-        events: true,
-      },
-    });
+    return this.organizationRepository
+      .find({
+        relations: {
+          employees: { user: true },
+          events: true,
+          blockedOrganization: true,
+        },
+      })
+      .then((organizations) =>
+        organizations.map((org) => {
+          return { ...org, is_blocked: !!org.blockedOrganization };
+        }),
+      );
   }
 
   async findOne(id: number) {
