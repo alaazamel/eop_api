@@ -72,10 +72,14 @@ export class AdminReportController {
   @Put('/ignore/:report_id')
   @UseGuards(AccessTokenGuard, RoleGuard)
   @Roles(UserRoleEnum.ADMIN)
-  async markAsIgnored(@Param('report_id') reportId: number) {
+  async markAsIgnored(
+    @Param('report_id') reportId: number,
+    @User() user: AuthUserType,
+  ) {
     const updated = await this.service.updateStatus(
       reportId,
       AdminReportStatusEnum.ignored,
+      user.sub,
     );
     return AdminReportSerializer.serialize(updated, this.fileUtilityService);
   }
@@ -83,10 +87,14 @@ export class AdminReportController {
   @Put('/resolve/:report_id')
   @UseGuards(AccessTokenGuard, RoleGuard)
   @Roles(UserRoleEnum.ADMIN)
-  async markAsResolved(@Param('report_id') reportId: number) {
+  async markAsResolved(
+    @Param('report_id') reportId: number,
+    @User() user: AuthUserType,
+  ) {
     const updated = await this.service.updateStatus(
       reportId,
       AdminReportStatusEnum.resolved,
+      user.sub,
     );
     return AdminReportSerializer.serialize(updated, this.fileUtilityService);
   }

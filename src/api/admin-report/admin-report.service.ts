@@ -21,6 +21,7 @@ export class AdminReportService {
         event: true,
         reporter: true,
         platformProblem: true,
+        resolvedBy: true,
       },
       order: { createdAt: 'DESC' },
       skip: (query.page - 1) * query.pageSize,
@@ -35,6 +36,7 @@ export class AdminReportService {
         event: true,
         reporter: true,
         platformProblem: true,
+        resolvedBy: true,
       },
     });
   }
@@ -62,11 +64,16 @@ export class AdminReportService {
     });
   }
 
-  async updateStatus(id: number, newStatus: AdminReportStatusEnum) {
+  async updateStatus(
+    id: number,
+    newStatus: AdminReportStatusEnum,
+    resolverId: number,
+  ) {
     // update
     await this.repository.update(id, {
       status: newStatus,
       resolvedAt: new Date(),
+      resolvedBy: { id: resolverId },
     });
 
     // return the updated entity

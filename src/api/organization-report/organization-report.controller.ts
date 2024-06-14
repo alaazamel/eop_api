@@ -68,8 +68,11 @@ export class OrganizationReportController {
   @Put('/resolve-message/:report_id')
   @UseGuards(AccessTokenGuard, RoleGuard)
   @Roles(UserRoleEnum.EMPLOYEE)
-  async resolveMessageReport(@Param('report_id') reportId: number) {
-    const updated = await this.service.resolveMessageReport(reportId);
+  async resolveMessageReport(
+    @Param('report_id') reportId: number,
+    @User() user: AuthUserType,
+  ) {
+    const updated = await this.service.resolveMessageReport(reportId, user.sub);
     return OrganizationReportSerializer.serialize(
       updated,
       this.fileUtilityService,
@@ -79,10 +82,14 @@ export class OrganizationReportController {
   @Put('/resolve/:report_id')
   @UseGuards(AccessTokenGuard, RoleGuard)
   @Roles(UserRoleEnum.EMPLOYEE)
-  async markAsResolved(@Param('report_id') reportId: number) {
+  async markAsResolved(
+    @Param('report_id') reportId: number,
+    @User() user: AuthUserType,
+  ) {
     const updated = await this.service.updateStatus(
       reportId,
       OrganizationReportStatusEnum.resolved,
+      user.sub,
     );
     return OrganizationReportSerializer.serialize(
       updated,
@@ -93,10 +100,14 @@ export class OrganizationReportController {
   @Put('/ignore/:report_id')
   @UseGuards(AccessTokenGuard, RoleGuard)
   @Roles(UserRoleEnum.EMPLOYEE)
-  async markAsIgnored(@Param('report_id') reportId: number) {
+  async markAsIgnored(
+    @Param('report_id') reportId: number,
+    @User() user: AuthUserType,
+  ) {
     const updated = await this.service.updateStatus(
       reportId,
       OrganizationReportStatusEnum.ignored,
+      user.sub,
     );
     return OrganizationReportSerializer.serialize(
       updated,

@@ -7,6 +7,7 @@ import { AttendeeDetailsSerializer } from '../../attendee/serializers/attendee-d
 import { FileUtilityService } from '../../../config/files/utility/file-utility.service';
 import { EmployeeDetailsSerializer } from '../../employee/seializers/employee-details.serializer';
 import { AdminSerializer } from '../../admin/serializers/admin.serializer';
+import { UserRole } from '../../userRole/entities/user_role.entity';
 
 export class UserSerializer {
   static _getAttendeeData(
@@ -37,9 +38,18 @@ export class UserSerializer {
       user_role: UserRoleSerializer.serialize(user.userRole),
       username: user.username,
       user_email: user.email,
-      attendee: this._getAttendeeData(fileUtilityService, user.attendee),
-      employee: this._getEmployeeData(fileUtilityService, user.employee),
-      admin: this._getAdminData(fileUtilityService, user.admin),
+      attendee:
+        user.userRole.id == UserRole.ATTENDEE
+          ? this._getAttendeeData(fileUtilityService, user.attendee)
+          : undefined,
+      employee:
+        user.userRole.id == UserRole.EMPLOYEE
+          ? this._getEmployeeData(fileUtilityService, user.employee)
+          : undefined,
+      admin:
+        user.userRole.id == UserRole.ADMIN
+          ? this._getAdminData(fileUtilityService, user.admin)
+          : undefined,
     };
   }
 }

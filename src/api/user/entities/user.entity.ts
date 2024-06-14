@@ -65,7 +65,7 @@ export class User extends BaseEntity {
   @OneToOne(() => Attendee, (type) => type.user, { eager: true })
   attendee?: Attendee;
 
-  @OneToOne(() => Admin, (type) => type.user)
+  @OneToOne(() => Admin, (type) => type.user, { eager: true })
   admin?: Admin;
 
   @OneToOne(() => BlockedUser, (blocked) => blocked.user)

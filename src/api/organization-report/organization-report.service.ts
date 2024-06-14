@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { OrganizationReport } from './entities/organization-report.entity';
-import { DataSource, IsNull, Not, Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { CreateOrganizationReportType } from './types/create-organization-report.type';
 import { CreateOrganizationReportTransformer } from './transformers/create-organization-report.transformer';
 import { OrganizationReportsQuery } from './filters/organization-reports.query';
@@ -21,7 +21,6 @@ export class OrganizationReportService {
     private readonly repository: Repository<OrganizationReport>,
     private readonly chatApiService: ChatApiService,
     private readonly chatGateway: ChatGateway,
-    private readonly dataSource: DataSource,
   ) {}
 
   isReported(userId: number, messageId: number): Promise<boolean> {
@@ -34,7 +33,7 @@ export class OrganizationReportService {
     });
   }
 
-  async resolveMessageReport(reportId: number) {
+  async resolveMessageReport(reportId: number, resolverId: number) {
     const report = await this.repository.findOne({
       relations: { message: true },
       where: {
@@ -60,17 +59,26 @@ export class OrganizationReportService {
       this.chatGateway.emitMessageDeletedEvent(groupId!, report.message!.id);
 
       // mark the report as resolved...
-      return this.updateStatus(reportId, OrganizationReportStatusEnum.resolved);
+      return this.updateStatus(
+        reportId,
+        OrganizationReportStatusEnum.resolved,
+        resolverId,
+      );
     }
 
     throw new BadRequestException('Error while deleting the message!');
   }
 
-  async updateStatus(id: number, newStatus: OrganizationReportStatusEnum) {
+  async updateStatus(
+    id: number,
+    newStatus: OrganizationReportStatusEnum,
+    resolverId: number,
+  ) {
     // update
     await this.repository.update(id, {
       status: newStatus,
       resolvedAt: new Date(),
+      resolvedBy: { id: resolverId },
     });
 
     // return the updated entity
@@ -85,6 +93,7 @@ export class OrganizationReportService {
         message: { reactions: true, sender: true },
         reporter: true,
         abuseType: true,
+        resolvedBy: true,
       },
       withDeleted: true,
     });
@@ -98,6 +107,7 @@ export class OrganizationReportService {
         message: { reactions: true, sender: true },
         reporter: true,
         abuseType: true,
+        resolvedBy: true,
       },
       withDeleted: true,
       order: { createdAt: 'DESC' },

@@ -61,4 +61,8 @@ export class AdminReport extends BaseEntity {
     nullable: true,
   })
   resolvedAt!: Date | null;
+
+  @ManyToOne(() => User, { nullable: true })
+  @JoinColumn({ name: 'resolved_by' })
+  resolvedBy?: User;
 }

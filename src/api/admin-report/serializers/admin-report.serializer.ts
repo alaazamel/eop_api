@@ -25,6 +25,9 @@ export class AdminReportSerializer {
       resolved_at: data.resolvedAt
         ? moment(data.resolvedAt).format(DEFAULT_DB_DATETIME_FORMAT)
         : null,
+      resolved_by: data.resolvedBy
+        ? UserSerializer.serialize(fileUtilityService!, data.resolvedBy)
+        : null,
     };
   }
 
