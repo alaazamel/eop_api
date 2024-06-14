@@ -12,6 +12,7 @@ import { Exclude } from 'class-transformer';
 import { Employee } from '../../employee/entities/employee.entity';
 import { Attendee } from '../../attendee/entities/attendee.entity';
 import { Admin } from '../../admin/entities/admin.entity';
+import { BlockedUser } from '../../admin/entities/blocked-user.entity';
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity {
@@ -66,4 +67,7 @@ export class User extends BaseEntity {
 
   @OneToOne(() => Admin, (type) => type.user)
   admin?: Admin;
+
+  @OneToOne(() => BlockedUser, (blocked) => blocked.user)
+  blockedUser?: BlockedUser;
 }

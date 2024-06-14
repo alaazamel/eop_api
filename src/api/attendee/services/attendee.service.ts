@@ -438,12 +438,18 @@ export class AttendeeService {
       .getRepository(Attendee)
       .createQueryBuilder('attendee')
       .innerJoin('attendee.user', 'user')
+      .leftJoin('user.blockedUser', 'blocked')
       .leftJoin(
         'attendee.ticketsEvents',
         'tickets',
         `jsonb_exists(tickets.data, 'product')`,
       )
-      .addSelect(['user.id', 'user.username', 'user.email'])
+      .addSelect([
+        'user.id',
+        'user.username',
+        'user.email',
+        'CASE WHEN blocked.id IS NOT NULL THEN true ELSE false END AS is_blocked',
+      ])
       .addSelect('SUM(tickets.value)', 'tickets_purchased')
       .addSelect((subQuery) => {
         return subQuery
@@ -466,6 +472,7 @@ export class AttendeeService {
       })
       .groupBy('attendee.id')
       .addGroupBy('user.id')
+      .addGroupBy('is_blocked')
       .getRawMany();
   }
 }
