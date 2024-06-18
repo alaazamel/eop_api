@@ -5,9 +5,14 @@ import { QrCodeService } from './services/qrcode.service';
 import { AppConfigModule } from '../../config/app/config.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AttendanceQrCode } from './entities/attendance-qrcode.entity';
+import { AttendeeModule } from '../attendee/attendee.module';
 
 @Module({
-  imports: [AppConfigModule, TypeOrmModule.forFeature([AttendanceQrCode])],
+  imports: [
+    AttendeeModule,
+    AppConfigModule,
+    TypeOrmModule.forFeature([AttendanceQrCode]),
+  ],
   providers: [AttendanceService, QrCodeService],
   controllers: [AttendanceController],
   exports: [QrCodeService],

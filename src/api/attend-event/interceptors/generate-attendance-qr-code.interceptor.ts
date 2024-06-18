@@ -5,33 +5,27 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { DataSource, QueryRunner } from 'typeorm';
+import { QueryRunner } from 'typeorm';
 import { QrCodeService } from '../../attendance/services/qrcode.service';
 import { ChangeAttendEventStatusDto } from '../dto/change-attend-event-status.dto';
-import { tap } from 'rxjs/operators';
 import { AttendeeEventStatus } from '../enums/attendee-event-status.enum';
-import { AttendanceQrCode } from '../../attendance/entities/attendance-qrcode.entity';
 
 @Injectable()
 export class GenerateAttendanceQrCodeInterceptor implements NestInterceptor {
-  constructor(
-    private readonly qrCodeService: QrCodeService,
-    private readonly dataSource: DataSource,
-  ) {}
+  constructor(private readonly qrCodeService: QrCodeService) {}
 
-  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+  async intercept(
+    context: ExecutionContext,
+    next: CallHandler,
+  ): Promise<Observable<any>> {
     // extract the required payload...
     const httpContext = context.switchToHttp();
     const req = httpContext.getRequest();
     const body: ChangeAttendEventStatusDto = req.body;
     const queryRunner = req.queryRunner;
 
-    return (
-      next
-        .handle()
-        // after finalizing the operation...
-        .pipe(tap(() => this._generateQrCode(queryRunner, body)))
-    );
+    await this._generateQrCode(queryRunner, body);
+    return next.handle();
   }
 
   private async _generateQrCode(
@@ -46,51 +40,51 @@ export class GenerateAttendanceQrCodeInterceptor implements NestInterceptor {
       case AttendeeEventStatus.accepted:
         return this._processSwitchingToAcceptedStatus(queryRunner, payload);
       case AttendeeEventStatus.rejected:
-        break;
       case AttendeeEventStatus.waiting:
-        break;
+        return this._processSwitchingToRejectedOrWaitingStatus(
+          queryRunner,
+          payload,
+        );
     }
-    return null;
   }
 
   private async _processSwitchingToAcceptedStatus(
     queryRunner: QueryRunner,
     payload: ChangeAttendEventStatusDto,
   ) {
-    // create a new attendance qr code
-    const attendanceQrCodeRepo =
-      queryRunner.manager.getRepository(AttendanceQrCode);
-
-    const isExist = await attendanceQrCodeRepo.exists({
-      where: {
-        attendee: { id: payload.attendee_id },
-        event: { id: payload.event_id },
-      },
-    });
+    // check for qr code existence
+    const qrCode = await this.qrCodeService.findOneBy(
+      payload.event_id,
+      payload.attendee_id,
+      queryRunner,
+    );
 
     // if not exists, create it...
-    if (!isExist) {
-      // generate qr code...
-      const generatedQrCode: string =
-        await this.qrCodeService.generateAttendanceQrCode(
-          payload.attendee_id,
-          payload.event_id,
-        );
-      const created = attendanceQrCodeRepo.create({
-        event: { id: payload.event_id },
-        attendee: { id: payload.attendee_id },
-        code: generatedQrCode,
-      });
-
-      // save it...
-      await attendanceQrCodeRepo.save(created);
+    if (!qrCode) {
+      return this.qrCodeService.createAndStoreQrCode(
+        payload.attendee_id,
+        payload.event_id,
+        queryRunner,
+      );
     }
 
-    return attendanceQrCodeRepo.findOne({
-      where: {
-        event: { id: payload.event_id },
-        attendee: { id: payload.attendee_id },
-      },
-    });
+    return qrCode;
+  }
+
+  private async _processSwitchingToRejectedOrWaitingStatus(
+    queryRunner: QueryRunner,
+    payload: ChangeAttendEventStatusDto,
+  ) {
+    // check for qr code existence
+    const qrCode = await this.qrCodeService.findOneBy(
+      payload.event_id,
+      payload.attendee_id,
+      queryRunner,
+    );
+
+    // if exists, delete it
+    if (qrCode) {
+      await this.qrCodeService.deleteById(qrCode.id, queryRunner);
+    }
   }
 }
