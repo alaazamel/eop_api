@@ -54,6 +54,7 @@ import { OrganizationReportModule } from './api/organization-report/organization
 import { AdminReportModule } from './api/admin-report/admin-report.module';
 import { PlatformProblemModule } from './api/platform-problem/platform-problem.module';
 import { GiftCardsModule } from './api/gift-cards/gift-cards.module';
+import { AttendanceModule } from './api/attendance/attendance.module';
 
 @Module({
   imports: [
@@ -126,6 +127,7 @@ import { GiftCardsModule } from './api/gift-cards/gift-cards.module';
     GiftCardsModule,
     AdminReportModule,
     PlatformProblemModule,
+    AttendanceModule,
   ],
   providers: [IsUniqueConstraint, IsExistConstraint, IsNotExistConstraint],
   controllers: [HealthController],

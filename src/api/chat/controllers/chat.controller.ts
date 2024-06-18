@@ -25,7 +25,6 @@ import { FileUtilityService } from '../../../config/files/utility/file-utility.s
 import { ChatService } from '../services/chat.service';
 import { User } from '../../../common/decorators/user.decorator';
 import { AuthUserType } from '../../../common/types/auth-user.type';
-import { GroupMessageParam } from '../dto/group-message.param';
 import { ChatGateway } from '../gateways/chat.gateway';
 
 @Controller('chat')
@@ -51,15 +50,15 @@ export class ChatController {
   }
 
   @Delete('delete-message/:id')
-  @Roles(UserRoleEnum.ADMIN, UserRoleEnum.EMPLOYEE)
+  @Roles(UserRoleEnum.EMPLOYEE)
   @UseGuards(AccessTokenGuard, RoleGuard)
-  async deleteMessage(@Param() params: GroupMessageParam) {
+  async deleteMessage(@Param('id') id: number) {
     // delete the message
-    const result = await this.chatApiService.deleteMessage(params.id);
+    const result = await this.chatApiService.deleteMessage(id);
 
     if (result.isDeleted) {
       // emit an event
-      this.chatGateway.emitMessageDeletedEvent(result.groupId!, params.id);
+      this.chatGateway.emitMessageDeletedEvent(result.groupId!, id);
     }
     return result.isDeleted;
   }

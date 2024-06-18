@@ -12,6 +12,7 @@ import { AttendeesTickets } from '../payment/entities/attendees-tickets.entity';
 import { PaymentModule } from '../payment/payment.module';
 import { IsAttendeeEventStatusSameConstraint } from './validators/is_attendee_event_status_same_constraint';
 import { OrganizationsTickets } from '../payment/entities/organizations-tickets.entity';
+import { AttendanceModule } from '../attendance/attendance.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { OrganizationsTickets } from '../payment/entities/organizations-tickets.
       OrganizationsTickets,
     ]),
     PaymentModule,
+    AttendanceModule,
   ],
   controllers: [AttendEventController],
   providers: [

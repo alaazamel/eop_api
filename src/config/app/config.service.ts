@@ -14,6 +14,13 @@ export class AppConfigService {
   get url(): string {
     return this.configService.get<string>('app.url', { infer: true }) ?? '';
   }
+
+  get attendancePath(): string {
+    return (
+      this.configService.get<string>('app.attendance_path', { infer: true }) ??
+      ''
+    );
+  }
   get port(): number {
     return Number(this.configService.get<number>('app.port'));
   }

@@ -20,6 +20,7 @@ import { InsertedDataEntity } from '../../gamification/entities/data-insertion/i
 import { AttendeeBadgeEntity } from '../../gamification/entities/rewards-attendee/attendee-badge.entity';
 import { AttendeePointsEntity } from '../../gamification/entities/rewards-attendee/attendee-points.entity';
 import { AttendeeRedeemablePointsEntity } from '../../gamification/entities/rewards-attendee/attendee-redeemable-points.entity';
+import { AttendanceQrCode } from '../../attendance/entities/attendance-qrcode.entity';
 
 @Entity('attendees')
 export class Attendee extends BaseEntity {
@@ -140,4 +141,9 @@ export class Attendee extends BaseEntity {
     (attendeeRedeemablePointsEntity) => attendeeRedeemablePointsEntity.attendee,
   )
   redeemablePoints: AttendeeRedeemablePointsEntity[];
+
+  @OneToMany(() => AttendanceQrCode, (code) => code.attendee, {
+    onDelete: 'CASCADE',
+  })
+  attendanceQrCodes: AttendanceQrCode[];
 }
