@@ -38,7 +38,7 @@ export class QrCodeService {
       queryRunner?.manager.getRepository(AttendanceQrCode) ?? this.repository;
     return repository.findOne({
       where: { event: { id: eventId }, attendee: { id: attendeeId } },
-      relations: { event: true, attendee: true },
+      relations: { event: true, attendee: { user: true } },
     });
   }
 

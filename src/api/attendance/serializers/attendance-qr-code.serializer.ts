@@ -8,6 +8,11 @@ export class AttendanceQrCodeSerializer {
       id: data.id,
       code: data.code,
       generated_at: moment(data.createdAt).format(DEFAULT_DB_DATETIME_FORMAT),
+      attendee: {
+        name: `${data.attendee.firstName} ${data.attendee.lastName}`,
+        email: `${data.attendee.user.email}`,
+        ticket_id: `TK-${data.id}`,
+      },
     };
   }
 }
