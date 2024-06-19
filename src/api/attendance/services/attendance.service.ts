@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { AttendanceDay } from '../entities/attendance-day.entity';
 import { DataSource, DeleteResult, QueryRunner, Repository } from 'typeorm';
 import { Event } from '../../event/entities/event.entity';
+import { GetAttendanceRecordType } from '../types/get-attendance-record.type';
 
 @Injectable()
 export class AttendanceService {
@@ -11,6 +12,29 @@ export class AttendanceService {
     private readonly repository: Repository<AttendanceDay>,
     private readonly dataSource: DataSource,
   ) {}
+
+  public async getAttendanceRecordBy(data: GetAttendanceRecordType) {
+    return this.repository.findOne({
+      where: {
+        event: { id: data.eventId },
+        attendee: { id: data.attendeeId },
+        dayDate: new Date(),
+      },
+      relations: {
+        event: {
+          tags: true,
+          address: true,
+          chatGroup: false,
+          attachments: true,
+          approvalStatuses: true,
+          targetedAgrGroups: true,
+        },
+        eventDay: { slots: true },
+        attendee: true,
+        checkedBy: true,
+      },
+    });
+  }
 
   public async deleteAttendanceRecordsIfGenerated(
     attendeeId: number,

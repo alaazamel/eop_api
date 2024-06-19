@@ -2,7 +2,9 @@ import {
   BadRequestException,
   Controller,
   Get,
+  NotFoundException,
   Param,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { QrCodeService } from './services/qrcode.service';
@@ -16,6 +18,9 @@ import { AuthUserType } from '../../common/types/auth-user.type';
 import { AttendeeService } from '../attendee/services/attendee.service';
 import { AttendanceQrCode } from './entities/attendance-qrcode.entity';
 import { AttendanceQrCodeSerializer } from './serializers/attendance-qr-code.serializer';
+import { GetAttendanceRecordDto } from './dto/get-attendance-record.dto';
+import { AttendanceDaySerializer } from './serializers/attendance-day.serializer';
+import { FileUtilityService } from '../../config/files/utility/file-utility.service';
 
 @Controller('attendance')
 export class AttendanceController {
@@ -23,9 +28,24 @@ export class AttendanceController {
     private readonly qrCodeService: QrCodeService,
     private readonly attendeeService: AttendeeService,
     private readonly attendanceService: AttendanceService,
+    private readonly fileUtilityService: FileUtilityService,
   ) {}
 
   // check attendance record by qr code url...
+  @Get('check-attendance')
+  @UseGuards(AccessTokenGuard, RoleGuard)
+  @Roles(UserRoleEnum.EMPLOYEE)
+  async checkAttendanceRecord(@Query() query: GetAttendanceRecordDto) {
+    const result = await this.attendanceService.getAttendanceRecordBy(query);
+
+    if (!result) {
+      throw new NotFoundException(
+        'There is no active attendance record at this moment',
+      );
+    }
+
+    return AttendanceDaySerializer.serialize(result, this.fileUtilityService);
+  }
 
   @Get('get-attendance-code/:event_id')
   @UseGuards(AccessTokenGuard, RoleGuard)

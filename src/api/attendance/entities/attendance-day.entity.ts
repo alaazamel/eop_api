@@ -4,6 +4,7 @@ import { Attendee } from '../../attendee/entities/attendee.entity';
 import { Event } from '../../event/entities/event.entity';
 import { AttendanceStatus } from '../enums/attendance-status.enum';
 import { EventDay } from '../../event/entities/event-day.entity';
+import { User } from '../../user/entities/user.entity';
 
 @Entity('attendance_days')
 export class AttendanceDay extends BaseEntity {
@@ -45,4 +46,8 @@ export class AttendanceDay extends BaseEntity {
     default: AttendanceStatus.absent,
   })
   status: AttendanceStatus;
+
+  @ManyToOne(() => User, { onDelete: 'CASCADE', nullable: true })
+  @JoinColumn({ name: 'checked_by' })
+  checkedBy?: User;
 }
