@@ -4,6 +4,7 @@ import {
   Get,
   NotFoundException,
   Param,
+  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -21,6 +22,7 @@ import { AttendanceQrCodeSerializer } from './serializers/attendance-qr-code.ser
 import { GetAttendanceRecordDto } from './dto/get-attendance-record.dto';
 import { AttendanceDaySerializer } from './serializers/attendance-day.serializer';
 import { FileUtilityService } from '../../config/files/utility/file-utility.service';
+import { ConfirmAttendanceRecordDto } from './dto/confirm-attendance-record.dto';
 
 @Controller('attendance')
 export class AttendanceController {
@@ -70,5 +72,18 @@ export class AttendanceController {
     }
 
     return AttendanceQrCodeSerializer.serialize(qrCode);
+  }
+
+  @Put('confirm-attendance/:record_id')
+  @UseGuards(AccessTokenGuard, RoleGuard)
+  @Roles(UserRoleEnum.EMPLOYEE)
+  async confirmAttendanceRecord(
+    @User() user: AuthUserType,
+    @Param() params: ConfirmAttendanceRecordDto,
+  ) {
+    const payload = { ...params, user_id: user.sub };
+    const record =
+      await this.attendanceService.confirmAttendanceRecord(payload);
+    return AttendanceDaySerializer.serialize(record!, this.fileUtilityService);
   }
 }

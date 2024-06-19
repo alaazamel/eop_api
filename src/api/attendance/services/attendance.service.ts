@@ -1,9 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AttendanceDay } from '../entities/attendance-day.entity';
 import { DataSource, DeleteResult, QueryRunner, Repository } from 'typeorm';
 import { Event } from '../../event/entities/event.entity';
 import { GetAttendanceRecordType } from '../types/get-attendance-record.type';
+import { ConfirmAttendanceRecordType } from '../types/confirm-attendance-record.type';
+import { AttendanceStatus } from '../enums/attendance-status.enum';
 
 @Injectable()
 export class AttendanceService {
@@ -12,6 +14,59 @@ export class AttendanceService {
     private readonly repository: Repository<AttendanceDay>,
     private readonly dataSource: DataSource,
   ) {}
+
+  public async confirmAttendanceRecord(data: ConfirmAttendanceRecordType) {
+    const isConfirmed = await this.repository.exists({
+      where: { id: data.record_id, status: AttendanceStatus.attended },
+    });
+
+    // if already confirmed, throw an exception
+    if (isConfirmed) {
+      throw new BadRequestException(
+        'the attendance record is already confirmed',
+      );
+    }
+
+    const isSameDay =
+      (await this.repository
+        .createQueryBuilder('entity')
+        .where('entity.id = :recordId', { recordId: data.record_id })
+        .andWhere('DATE(entity.dayDate) = CURRENT_DATE')
+        .getCount()) > 0;
+
+    if (!isSameDay) {
+      throw new BadRequestException(
+        'cannot confirm attendance in different day date',
+      );
+    }
+
+    // otherwise, confirm the attendance...
+    await this.repository.update(data.record_id, {
+      status: AttendanceStatus.attended,
+      checkedBy: { id: data.user_id },
+    });
+
+    return this.getAttendanceRecordById(data.record_id);
+  }
+
+  public async getAttendanceRecordById(id: number) {
+    return this.repository.findOne({
+      where: { id },
+      relations: {
+        event: {
+          tags: true,
+          address: true,
+          chatGroup: false,
+          attachments: true,
+          approvalStatuses: true,
+          targetedAgrGroups: true,
+        },
+        eventDay: { slots: true },
+        attendee: true,
+        checkedBy: true,
+      },
+    });
+  }
 
   public async getAttendanceRecordBy(data: GetAttendanceRecordType) {
     return this.repository.findOne({
