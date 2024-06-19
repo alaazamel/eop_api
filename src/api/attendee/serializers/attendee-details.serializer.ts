@@ -43,7 +43,7 @@ export class AttendeeDetailsSerializer {
                 attendeeEvent.event,
               );
             })
-        : undefined,
+        : [],
     };
   }
 }
