@@ -170,4 +170,11 @@ export class Event extends BaseEntity {
 
   @Column({ type: 'bigint', nullable: true })
   fees: number | null;
+
+  @Column({
+    name: 'support_attendance',
+    type: 'boolean',
+    default: true,
+  })
+  supportAttendance: boolean;
 }

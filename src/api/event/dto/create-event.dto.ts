@@ -11,8 +11,8 @@ import {
   IsOptional,
   IsString,
   MaxLength,
-  ValidateIf,
   Min,
+  ValidateIf,
   ValidateNested,
 } from 'class-validator';
 import { CreateEventDayDto } from './create-event-day.dto';
@@ -108,4 +108,8 @@ export class CreateEventDto {
   @ValidateNested()
   @Type(() => CreateEventChatGroupDto)
   chat_group?: CreateEventChatGroupDto;
+
+  @IsOptional()
+  @IsBoolean()
+  support_attendance: boolean = true;
 }

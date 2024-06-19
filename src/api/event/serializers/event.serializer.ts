@@ -56,6 +56,7 @@ export class EventSerializer {
       chat_group: ChatGroupSerializer.serialize(data.chatGroup),
       fees: data.fees,
       form: data.form,
+      support_attendance: data.supportAttendance,
     };
   }
 

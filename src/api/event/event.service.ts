@@ -214,6 +214,7 @@ export class EventService {
         capacity: payload.capacity ?? undefined,
         directRegister: payload.direct_register,
         isChattingEnabled: payload.is_chatting_enabled,
+        supportAttendance: payload.support_attendance,
         fees: payload.fees,
         registrationStartDate: payload.registration_start_date
           ? moment(payload.registration_start_date).format(
