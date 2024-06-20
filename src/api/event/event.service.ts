@@ -10,7 +10,6 @@ import { Employee } from '../employee/entities/employee.entity';
 import { Event } from './entities/event.entity';
 import { Organization } from '../organization/entities/organization.entity';
 import {
-  DEFAULT_DATE_FORMAT,
   DEFAULT_DB_DATE_FORMAT,
   EVENT_FILES,
 } from '../../common/constants/constants';
@@ -316,9 +315,7 @@ export class EventService {
 
           const dayData = {
             event: { id: savedEvent.id },
-            dayDate: moment(day.day_date, DEFAULT_DATE_FORMAT).format(
-              DEFAULT_DB_DATE_FORMAT,
-            ),
+            dayDate: day.day_date,
           };
 
           const createdDay = queryRunner.manager.create(EventDay, dayData);
@@ -384,7 +381,7 @@ export class EventService {
       );
 
       // commit the transaction
-      await queryRunner.commitTransaction();
+      // await queryRunner.commitTransaction();
 
       const newEntity = await this.findEvent(savedEvent.id, true);
 
