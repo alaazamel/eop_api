@@ -34,4 +34,11 @@ export class AttendanceDaySerializer {
       ),
     };
   }
+
+  static serializeList(
+    data: AttendanceDay[],
+    fileUtilityService: FileUtilityService,
+  ) {
+    return data.map((item) => this.serialize(item, fileUtilityService));
+  }
 }

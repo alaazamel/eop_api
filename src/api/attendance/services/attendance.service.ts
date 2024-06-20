@@ -6,6 +6,7 @@ import { Event } from '../../event/entities/event.entity';
 import { GetAttendanceRecordType } from '../types/get-attendance-record.type';
 import { ConfirmAttendanceRecordType } from '../types/confirm-attendance-record.type';
 import { AttendanceStatus } from '../enums/attendance-status.enum';
+import { GetAttendanceListType } from '../types/get-attendance-list.type';
 
 @Injectable()
 export class AttendanceService {
@@ -14,6 +15,28 @@ export class AttendanceService {
     private readonly repository: Repository<AttendanceDay>,
     private readonly dataSource: DataSource,
   ) {}
+
+  public async getAttendanceRecordsForEventDay(data: GetAttendanceListType) {
+    return this.repository.findAndCount({
+      where: { eventDay: { id: data.event_day_id } },
+      relations: {
+        event: {
+          tags: true,
+          address: true,
+          chatGroup: false,
+          attachments: true,
+          approvalStatuses: true,
+          targetedAgrGroups: true,
+        },
+        eventDay: { slots: true },
+        attendee: true,
+        checkedBy: true,
+      },
+      order: { attendee: { firstName: 'ASC' } },
+      skip: (data.page - 1) * data.pageSize,
+      take: data.pageSize,
+    });
+  }
 
   public async confirmAttendanceRecord(data: ConfirmAttendanceRecordType) {
     const isConfirmed = await this.repository.exists({

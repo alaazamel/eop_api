@@ -1,12 +1,15 @@
 import {
   BadRequestException,
+  Body,
   Controller,
   Get,
   NotFoundException,
   Param,
+  Post,
   Put,
   Query,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { QrCodeService } from './services/qrcode.service';
 import { AttendanceService } from './services/attendance.service';
@@ -23,6 +26,10 @@ import { GetAttendanceRecordDto } from './dto/get-attendance-record.dto';
 import { AttendanceDaySerializer } from './serializers/attendance-day.serializer';
 import { FileUtilityService } from '../../config/files/utility/file-utility.service';
 import { ConfirmAttendanceRecordDto } from './dto/confirm-attendance-record.dto';
+import { GetAttendanceListDto } from './dto/get-attendance-list.dto';
+import { GenericFilter } from '../../common/interfaces/query.interface';
+import { AttendanceDay } from './entities/attendance-day.entity';
+import { CheckIfEmployeeHasAccessToEventDayInterceptor } from './interceptors/check-if-employee-has-access-to-event-day.interceptor';
 
 @Controller('attendance')
 export class AttendanceController {
@@ -33,7 +40,31 @@ export class AttendanceController {
     private readonly fileUtilityService: FileUtilityService,
   ) {}
 
-  // check attendance record by qr code url...
+  @Post('attendance-list')
+  @UseGuards(AccessTokenGuard, RoleGuard)
+  @UseInterceptors(CheckIfEmployeeHasAccessToEventDayInterceptor)
+  @Roles(UserRoleEnum.EMPLOYEE)
+  async getAttendanceListForEventDay(
+    @Query() query: GenericFilter,
+    @Body() body: GetAttendanceListDto,
+  ) {
+    const payload = { ...query, ...body };
+    const result: [AttendanceDay[], number] =
+      await this.attendanceService.getAttendanceRecordsForEventDay(payload);
+
+    return {
+      meta_data: {
+        page: query.page,
+        page_size: query.pageSize,
+        total: result[1],
+      },
+      data: AttendanceDaySerializer.serializeList(
+        result[0],
+        this.fileUtilityService,
+      ),
+    };
+  }
+
   @Get('check-attendance')
   @UseGuards(AccessTokenGuard, RoleGuard)
   @Roles(UserRoleEnum.EMPLOYEE)
