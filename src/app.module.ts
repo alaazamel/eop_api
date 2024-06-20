@@ -55,6 +55,8 @@ import { AdminReportModule } from './api/admin-report/admin-report.module';
 import { PlatformProblemModule } from './api/platform-problem/platform-problem.module';
 import { GiftCardsModule } from './api/gift-cards/gift-cards.module';
 import { AttendanceModule } from './api/attendance/attendance.module';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { BlockingInterceptor } from './common/interceptors/blocking/blocking.interceptor';
 
 @Module({
   imports: [
@@ -129,7 +131,16 @@ import { AttendanceModule } from './api/attendance/attendance.module';
     PlatformProblemModule,
     AttendanceModule,
   ],
-  providers: [IsUniqueConstraint, IsExistConstraint, IsNotExistConstraint],
+  providers: [
+    IsUniqueConstraint,
+    IsExistConstraint,
+    IsNotExistConstraint,
+    // To handle blocked users globally
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: BlockingInterceptor,
+    },
+  ],
   controllers: [HealthController],
 })
 export class AppModule {}
